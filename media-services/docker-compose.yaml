@@ -277,7 +277,7 @@ services:
 
   # Ombi - Media Requests
   overseerr:
-    image: linuxserver/overseerr:1.33.0
+    image: linuxserver/overseerr:1.33.2
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
     container_name: overseerr
     environment:
