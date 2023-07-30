@@ -1,0 +1,117 @@
+version: '3.8'
+x-common-keys: &common-keys
+  restart: unless-stopped
+  networks:
+    - monitoring-services
+  deploy:
+    resources:
+      limits:
+        cpus: '0.25'
+        memory: 200M
+
+# Common environment values
+x-environment: &default-tz-puid-pgid
+  TZ: $TZ
+  PUID: $PUID
+  PGID: $PGID
+
+services:
+  grafana:
+    image: grafana/grafana-oss:9.3.6
+    <<: *common-keys
+    deploy:
+      resources:
+        limits:
+          cpus: '0.45'
+          memory: 200M
+    volumes:
+      - ./appdata/grafana/dashboards:/etc/grafana/provisioning/dashboards/configs
+      - ./appdata/grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      - ./appdata//grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+    ports:
+      - 33000:33000
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${MONITORING_GRAFANA_PASSWORD}
+      - GF_SERVER_HTTP_PORT=${MONITORING_GRAFANA_PORT-33000}
+
+  prometheus:
+    image: prom/prometheus:v2.42.0
+    <<: *common-keys
+    deploy:
+      resources:
+        limits:
+          cpus: '0.45'
+          memory: 300M
+    environment:
+      <<: *default-tz-puid-pgid
+    volumes:
+      - ./appdata/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./appdata/prometheus/data:/prometheus #chown 65534:65534
+    ports:
+      - 9090:9090
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.45.0
+    <<: *common-keys
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+
+  node_exporter:
+    image: prom/node-exporter
+    <<: *common-keys
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - 9100
+
+  loki:
+    image: grafana/loki:latest
+    <<: *common-keys
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image:  grafana/promtail:latest
+    <<: *common-keys
+    volumes:
+      - ./appdata/promtail/logs:/var/log
+      - ./appdata/promtail//config.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/docker-config.yaml
+    depends_on:
+      - loki
+
+  graphiteexporter:
+    image: prom/graphite-exporter:latest
+    <<: *common-keys
+    ports:
+      - "9108:9108"
+    volumes:
+      - ./appdata/graphitexporter/config.yml:/app/config/config.yml
+
+  mikrotikexporter:
+    image: ghcr.io/akpw/mktxp:latest
+    <<: *common-keys
+    environment:
+      <<: *default-tz-puid-pgid
+    ports:
+      - "49090:49090"
+    volumes:
+     - ./appdata/mikrotikexporter:/home/mktxp/mktxp:rw
+    user: root
+networks:
+  monitoring-services:
