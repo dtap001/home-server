@@ -6,26 +6,26 @@
 version: 2
 updates:
   - package-ecosystem: "docker" # See documentation for possible values
-    directory: "./backup-services" # Location of package manifests
+    directory: "./backup-services/" # Location of package manifests
     schedule:
       interval: "daily"
       
   - package-ecosystem: "docker" # See documentation for possible values
-    directory: "/core-services" # Location of package manifests
+    directory: "/core-services/" # Location of package manifests
     schedule:
       interval: "daily"
       
   - package-ecosystem: "docker" # See documentation for possible values
-    directory: "./media-services" # Location of package manifests
+    directory: "./media-services/" # Location of package manifests
     schedule:
       interval: "daily"
       
   - package-ecosystem: "docker" # See documentation for possible values
-    directory: "./monitoring-services" # Location of package manifests
+    directory: "./monitoring-services/" # Location of package manifests
     schedule:
       interval: "daily"
       
   - package-ecosystem: "docker" # See documentation for possible values
-    directory: "./reading-services" # Location of package manifests
+    directory: "./reading-services/" # Location of package manifests
     schedule:
       interval: "daily"

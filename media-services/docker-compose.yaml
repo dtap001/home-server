@@ -285,7 +285,7 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - $DOCKERDIR/appdata/overseerr:/app/config
+      - $DOCKERDIR/appdata/overseerr:/config
   # ombi:
   #   <<: *common-keys-media-services # See EXTENSION FIELDS at the top
   #   image: linuxserver/ombi:latest
