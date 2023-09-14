@@ -48,9 +48,32 @@ services:
       <<: *default-tz-puid-pgid
     volumes:
       - ./appdata/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./appdata/prometheus/alert.rules.yaml:/etc/prometheus/alert.rules.yaml
       - ./appdata/prometheus/data:/prometheus #chown 65534:65534
     ports:
       - 9090:9090
+
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    <<: *common-keys
+    ports:
+      - 9093:9093
+    volumes:
+      - ./appdata/alertmanager/config.yml:/etc/alertmanager/config.yml
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--log.level=debug'
+      - '--storage.path=/alertmanager'
+
+  blackbox:
+    image: prom/blackbox-exporter:v0.23.0
+    <<: *common-keys
+    ports:
+    - 9115:9115
+    command:
+    - --config.file=/etc/blackbox/blackbox.yml
+    volumes:
+    - ./appdata/blackbox/blackbox.yml:/etc/blackbox/blackbox.yml
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.45.0
