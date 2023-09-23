@@ -175,7 +175,7 @@ services:
   # Radarr - Movie management
   radarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: lscr.io/linuxserver/radarr:nightly # latest was causing "Error parsing column 45"
+    image: lscr.io/linuxserver/radarr:4.7.5 # latest was causing "Error parsing column 45"
     container_name: radarr
     networks:
       nginx_proxy_manager_proxy:
@@ -193,7 +193,7 @@ services:
   # Sonarr - TV Shows management
   sonarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: lscr.io/linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr:3.0.10
     container_name: sonarr
     networks:
       nginx_proxy_manager_proxy:
@@ -229,7 +229,7 @@ services:
   plexms:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
     #image: plexinc/pms-docker:public
-    image:  plexinc/pms-docker:1.32.4.7195-7c8f9d3b6
+    image:  plexinc/pms-docker:1.32.5.7516-8f4248874
     container_name: plexms
     deploy:
       resources:
