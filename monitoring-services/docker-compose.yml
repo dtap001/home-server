@@ -44,6 +44,8 @@ services:
         limits:
           cpus: '0.45'
           memory: 300M
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       <<: *default-tz-puid-pgid
     volumes:

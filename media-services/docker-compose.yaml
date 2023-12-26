@@ -89,8 +89,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: 500M
+          cpus: '0.50'
+          memory: 600M
     #network_mode: container:transmission-vpn # Passing network through Transmission Container if VPN is needed.
     ports:
       - "8080:8080"
@@ -235,7 +235,7 @@ services:
       resources:
         limits:
           cpus: '2'
-          memory: 1524M
+          memory: 2000M
     ports:
       - "32400:32400/tcp"
       - "3005:3005/tcp"
@@ -280,6 +280,11 @@ services:
     image: linuxserver/overseerr:1.33.2
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
     container_name: overseerr
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 500M
     environment:
        <<: *default-tz-puid-pgid
     ports:
