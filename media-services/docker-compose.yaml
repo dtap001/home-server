@@ -177,6 +177,11 @@ services:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
     image: lscr.io/linuxserver/radarr:4.7.5 # latest was causing "Error parsing column 45"
     container_name: radarr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M
     networks:
       nginx_proxy_manager_proxy:
         ipv4_address: 192.168.89.164
@@ -194,6 +199,11 @@ services:
   sonarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
     image: lscr.io/linuxserver/sonarr:3.0.10
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M
     container_name: sonarr
     networks:
       nginx_proxy_manager_proxy:
