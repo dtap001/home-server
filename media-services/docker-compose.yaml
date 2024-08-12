@@ -1,9 +1,5 @@
 version: "3.9"
 
-########################### NETWORKS
-# You may customize the network subnet (192.168.89.0/24) below as you please.
-# Docker Compose version 3.5 or higher required to define networks this way.
-
 volumes:
   processedvol:
     driver: local
@@ -39,19 +35,13 @@ networks:
     ipam:
       config:
         - subnet: 192.168.89.0/24
-  # If you decide to use Socket Proxy, you need socket_proxy network as we. See https://www.smarthomebeginner.com/traefik-docker-security-best-practices/#9_Use_a_Docker_Socket_Proxy
 
-########################### EXTENSION FIELDS
-# Helps eliminate repetition of sections
-# More Info on how to use this: https://github.com/htpcBeginner/docker-traefik/pull/228
 
-# Common environment values
 x-environment: &default-tz-puid-pgid
   TZ: $TZ
   PUID: $PUID
   PGID: $PGID
 
-# Keys common to some of the dependent services/apps
 x-common-keys-media-services: &common-keys-media-services
   networks:
     - nginx_proxy_manager_proxy
@@ -67,29 +57,16 @@ x-common-keys-media-services: &common-keys-media-services
     logging: "promtail"
     logging_jobname: "containerlogs"
 
-########################### SERVICES
 services:
-  # heimdall:
-  #   <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-  #   image: lscr.io/linuxserver/heimdall
-  #   container_name: heimdall
-  #   ports:
-  #     - "83:80" # 80 to 82 already taken by other services
-  #     # - "444:443" # 443 used by Nginx Proxy Manager. Disabled because we will put Heimdall behind proxy.
-  #   volumes:
-  #     - $DOCKERDIR/appdata/heimdall:/config
-  #   environment:
-  #     <<: *default-tz-puid-pgid
-
-  ############################# DOWNLOADERS
-  qbittorrent:
+  qbittorrent:    
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
+    profiles:
+      - disabled
+    image: lscr.io/linuxserver/qbittorrent:4.6.5
     deploy:
       resources:
         limits:
-          cpus: '0.50'
+          cpus: '1'
           memory: 600M
     #network_mode: container:transmission-vpn # Passing network through Transmission Container if VPN is needed.
     ports:
@@ -104,9 +81,10 @@ services:
       UMASK_SET: 002
 
   transmission:
+    profiles:
+      - disabled
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
     image: lscr.io/linuxserver/transmission:latest
-    container_name: transmission
     ports:
       - "9091:9091"
     cap_add:
@@ -142,13 +120,10 @@ services:
       TRANSMISSION_WATCH_DIR_ENABLED: "false"
       TRANSMISSION_DOWNLOAD_DIR: /data/downloads/complete
       LOG_TO_STDOUT: "true"
-  ############################# PVRS
-
-  # Prowlarr - Indexer Proxy
+  
   prowlarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: ghcr.io/linuxserver/prowlarr:develop
-    container_name: prowlarr
+    image: linuxserver/prowlarr:1.21.2
     networks:
       nginx_proxy_manager_proxy:
         ipv4_address: 192.168.89.162
@@ -160,23 +135,9 @@ services:
     environment:
       <<: *default-tz-puid-pgid
 
-  # jackett:
-  #   <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-  #   image: lscr.io/linuxserver/jackett:latest
-  #   container_name: jackett
-  #   environment:
-  #     <<: *default-tz-puid-pgid
-  #   volumes:
-  #     - $DOCKERDIR/appdata/jackett:/config
-  #     - downloadsvol:/downloads
-  #   ports:
-  #     - 9117:9117
-
-  # Radarr - Movie management
   radarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: lscr.io/linuxserver/radarr:4.7.5 # latest was causing "Error parsing column 45"
-    container_name: radarr
+    image: linuxserver/radarr:5.8.3 # latest was causing "Error parsing column 45"
     deploy:
       resources:
         limits:
@@ -185,8 +146,6 @@ services:
     networks:
       nginx_proxy_manager_proxy:
         ipv4_address: 192.168.89.164
-    ports:
-      - "7878:7878"
     volumes:
       - $DOCKERDIR/appdata/radarr:/config
       - downloadsvol:/data/downloads
@@ -195,21 +154,17 @@ services:
     environment:
       <<: *default-tz-puid-pgid
 
-  # Sonarr - TV Shows management
   sonarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: lscr.io/linuxserver/sonarr:3.0.10
+    image: linuxserver/sonarr:4.0.8
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 300M
-    container_name: sonarr
     networks:
       nginx_proxy_manager_proxy:
         ipv4_address: 192.168.89.167
-    ports:
-      - "8989:8989"
     volumes:
       - $DOCKERDIR/appdata/sonarr:/config
       - downloadsvol:/data/downloads
@@ -217,31 +172,11 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
     environment:
       <<: *default-tz-puid-pgid
-
-  # # Readarr - Books management
-  # readarr:
-  #   <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-  #   image: hotio/readarr:nightly
-  #   container_name: readarr
-  #   ports:
-  #     - "8987:8987"
-  #   volumes:
-  #     - $DOCKERDIR/appdata/readarr:/config
-  #     - processedvol:/data
-  #     - "/etc/localtime:/etc/localtime:ro"
-  #   environment:
-  #     <<: *default-tz-puid-pgid
-  #     UMASK: 002
-  #     #ARGS: ""
-
-  ############################# MEDIA
-  # Plex - Media Server
+ 
   plexms:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    #image: plexinc/pms-docker:public
-    image:  plexinc/pms-docker:1.32.5.7516-8f4248874
-    container_name: plexms
-    deploy:
+    image:  plexinc/pms-docker:1.40.4.8679-424562606
+    deploy: 
       resources:
         limits:
           cpus: '2'
@@ -272,24 +207,9 @@ services:
       PLEX_GID: $PGID
       ADVERTISE_IP: http://192.168.20.65:32400/
 
-  # Tautulli - Plex Stats and Monitoring
-  # tautulli:
-  #   <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-  #   image: linuxserver/tautulli:latest
-  #   container_name: tautulli
-  #   ports:
-  #     - "8181:8181"
-  #   volumes:
-  #     - $DOCKERDIR/appdata/tautulli/config:/config
-  #     - $DOCKERDIR/appdata/plexms/Library/Application Support/Plex Media Server/Logs:/logs:ro # For tautulli Plex log viewer
-  #   environment:
-  #     <<: *default-tz-puid-pgid
-
-  # Ombi - Media Requests
   overseerr:
     image: linuxserver/overseerr:1.33.2
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    container_name: overseerr
     deploy:
       resources:
         limits:
@@ -301,36 +221,12 @@ services:
       - 5055:5055
     volumes:
       - $DOCKERDIR/appdata/overseerr:/config
-  # ombi:
-  #   <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-  #   image: linuxserver/ombi:latest
-  #   container_name: ombi
-  #   ports:
-  #     - "3579:3579"
-  #   volumes:
-  #     - $DOCKERDIR/appdata/ombi:/config
-  #   environment:
-  #     <<: *default-tz-puid-pgid
-
-  # navidrome:
-  #   <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-  #   image: deluan/navidrome:latest
-  #   ports:
-  #     - "4533:4533"
-  #   environment:
-  #     # Optional: put your config options customization here. Examples:
-  #     ND_SCANSCHEDULE: 1h
-  #     ND_LOGLEVEL: info  
-  #     ND_SESSIONTIMEOUT: 24h
-  #     ND_BASEURL: ""
-  #   volumes:
-  #     - "$DOCKERDIR/appdata/navidrome:/data"
-  #     - "musicvollibrary:/music:ro"
 
   headphones:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
+    profiles:
+      - disabled
     image: lscr.io/linuxserver/headphones:latest
-    container_name: headphones
     environment:
       <<: *default-tz-puid-pgid
     volumes:
