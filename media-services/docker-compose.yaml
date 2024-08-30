@@ -60,8 +60,6 @@ x-common-keys-media-services: &common-keys-media-services
 services:
   qbittorrent:    
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    profiles:
-      - disabled
     image: lscr.io/linuxserver/qbittorrent:4.6.5
     deploy:
       resources:
@@ -70,7 +68,7 @@ services:
           memory: 600M
     #network_mode: container:transmission-vpn # Passing network through Transmission Container if VPN is needed.
     ports:
-      - "8080:8080"
+      - 8080:8080
       - 6881:6881
       - 6881:6881/udp
     volumes:
