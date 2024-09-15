@@ -82,7 +82,7 @@ services:
     profiles:
       - disabled
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: lscr.io/linuxserver/transmission:latest
+    image: lscr.io/linuxserver/transmission:4.0.6
     ports:
       - "9091:9091"
     cap_add:
@@ -121,7 +121,7 @@ services:
   
   prowlarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: linuxserver/prowlarr:1.21.2
+    image: linuxserver/prowlarr:1.23.1
     networks:
       nginx_proxy_manager_proxy:
         ipv4_address: 192.168.89.162
@@ -135,7 +135,7 @@ services:
 
   radarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: linuxserver/radarr:5.8.3 # latest was causing "Error parsing column 45"
+    image: linuxserver/radarr:5.9.1 # latest was causing "Error parsing column 45"
     deploy:
       resources:
         limits:
@@ -154,7 +154,7 @@ services:
 
   sonarr:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image: linuxserver/sonarr:4.0.8
+    image: linuxserver/sonarr:4.0.9
     deploy:
       resources:
         limits:
