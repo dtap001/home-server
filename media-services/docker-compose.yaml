@@ -47,7 +47,7 @@ x-common-keys-media-services: &common-keys-media-services
     - nginx_proxy_manager_proxy
   security_opt:
     - no-new-privileges:true
-  restart: unless-stopped
+  restart: always
   deploy:
     resources:
       limits:
