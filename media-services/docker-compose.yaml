@@ -52,7 +52,7 @@ x-common-keys-media-services: &common-keys-media-services
     resources:
       limits:
         cpus: '0.25'
-        memory: 200M
+        memory: 400M
   labels:
     logging: "promtail"
     logging_jobname: "containerlogs"
@@ -65,7 +65,7 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 600M
+          memory: 800M
     #network_mode: container:transmission-vpn # Passing network through Transmission Container if VPN is needed.
     ports:
       - 8080:8080
@@ -178,7 +178,7 @@ services:
       resources:
         limits:
           cpus: '2'
-          memory: 2000M
+          memory: 2500M
     ports:
       - "32400:32400/tcp"
       - "3005:3005/tcp"
@@ -212,7 +212,7 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 500M
+          memory: 800M
     environment:
        <<: *default-tz-puid-pgid
     ports:

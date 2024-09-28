@@ -19,7 +19,7 @@ x-common-keys-core: &common-keys-core
     resources:
       limits:
         cpus: '0.50'
-        memory: 300M
+        memory: 600M
 services:
   nginx_proxy_manager:
     <<: *common-keys-core # See EXTENSION FIELDS at the top
