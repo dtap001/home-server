@@ -173,7 +173,7 @@ services:
  
   plexms:
     <<: *common-keys-media-services # See EXTENSION FIELDS at the top
-    image:  plexinc/pms-docker:1.41.8.9834-071366d65
+    image:  plexinc/pms-docker:1.41.9.9961-46083195d
     deploy: 
       resources:
         limits:
