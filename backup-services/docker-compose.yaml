@@ -10,7 +10,7 @@ volumes:
   
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:10.6.22
     restart: always
     deploy:
       resources:
