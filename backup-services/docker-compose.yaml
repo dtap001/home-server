@@ -27,7 +27,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
 
   app:
-    image: nextcloud:27
+    image: nextcloud:31
     restart: always
     deploy:
       resources:
