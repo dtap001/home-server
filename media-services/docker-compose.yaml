@@ -13,18 +13,6 @@ volumes:
       type: cifs
       device: //nas.home/MEDIA/downloads
       o: "addr=nas.home,username=${CIFS_USER},password=${CIFS_PASSWORD},vers=3.0,uid=${PUID},gid=${PGID}"
-  musicvollibrary:
-    driver: local
-    driver_opts:
-      type: cifs
-      device: //nas.home/MUSIC/library
-      o: "addr=nas.home,username=${CIFS_USER},password=${CIFS_PASSWORD},vers=3.0,uid=${PUID},gid=${PGID}"
-  musicvolincoming:
-    driver: local
-    driver_opts:
-      type: cifs
-      device: //nas.home/MUSIC/incoming
-      o: "addr=nas.home,username=${CIFS_USER},password=${CIFS_PASSWORD},vers=3.0,uid=${PUID},gid=${PGID}"
 
 networks:
   default:
@@ -195,7 +183,6 @@ services:
     volumes:
       - $DOCKERDIR/appdata/plexms:/config
       - processedvol:/media
-      - musicvollibrary:/music
       - /dev/shm:/transcode
     environment:
       TZ: $TZ
@@ -230,7 +217,5 @@ services:
     volumes:
       - $DOCKERDIR/appdata/headphones:/config
       - downloadsvol:/data/downloads
-      - musicvollibrary:/music
-      - musicvolincoming:/incoming
     ports:
       - 1111:8181

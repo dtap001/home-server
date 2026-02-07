@@ -84,6 +84,17 @@ services:
       - 5514:5514/udp #optional
     restart: unless-stopped
         # Docker-GC - Automatic Docker Garbage Collection
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - $DOCKERDIR/appdata/homarr:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=9ff5398c0e7cb11c14698bf0aff2d50e68bc2bd48394e970eb5e8e42fe3abbfb
+    ports:
+      - '7575:7575'
   # Create docker-gc-exclude file
   # dockergc:
   #   <<: *common-keys-apps # See EXTENSION FIELDS at the top
